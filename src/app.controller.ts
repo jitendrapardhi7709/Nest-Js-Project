@@ -1,12 +1,39 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
-
-@Controller()
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+} from '@nestjs/common';
+import { Request } from 'express';
+@Controller('/api')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getRequest() {
+    return 'Hello I am Jitendra Pardhi';
+  }
+
+  @Post()
+  createTransaction(@Req() req: Request) {
+    console.log({ req: req.body });
+    return req.body;
+  }
+
+  @Patch()
+  updateRequest(@Req() req: Request) {
+    console.log({ req: req.body });
+    return req.body;
+  }
+
+  @Get('/:id')
+  fetchDetails(@Param() id: number) {
+    return id;
+  }
+
+  @Delete('/:id')
+  deleteRequest(@Param() id: number) {
+    return id;
   }
 }
