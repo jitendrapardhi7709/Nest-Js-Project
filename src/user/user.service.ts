@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { JsonWebKey } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -12,61 +12,88 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  get() {
-    return { name: 'JITENDRA PARDHI', mobile: 8487542542 };
-  }
+  async registerUser(body: any): Promise<any> {
+    const {
+      name,
+      email,
+      mobile,
+      password,
+      confirm_password: confirmPassword,
+      roles,
+    } = body;
 
-  async register(body: any): Promise<any> {
-    const name = body.name;
-    const email = body.email;
-    const mobile = body.mobile;
-    const password = body.password;
-    const confirmPassword = body.confirm_password;
-    const roles = body.roles;
-    
+    // ✅ Validate required fields
     if (!name || !email || !mobile || !password || !confirmPassword || !roles) {
       return {
-        Message: 'All given fields are madatory for register the User..!',
+        message: 'All fields are mandatory for user registration...!',
       };
     }
 
-    // Validate the password and confirmPassword
-
-    if (confirmPassword !== password) {
+    // ✅ Validate password match
+    if (password !== confirmPassword) {
       return {
-        Message:
-          'Password and Confirm Password is not match, Please check and reverify the password..!',
+        message:
+          'Password and Confirm Password do not match. Please verify...!',
       };
     }
 
+    // ✅ Check if user already exists
     const existingUser = await this.userRepository.findOne({
-      where: [{ email }, { mobile }],
+      where: { email },
     });
-
-    console.log({ existingUser });
 
     if (existingUser) {
       throw new BadRequestException(
-        'User already exists with given email or mobile.',
+        'User already exists with the given email or mobile...!',
       );
     }
 
-    const hashedPassword = await bcrypt.hash(body.password, 10); // ✅ Await the promise
+    // ✅ Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await this.userRepository.create({
+    // ✅ Create and save the user
+    const newUser = this.userRepository.create({
       name,
       email,
       mobile,
       roles,
-      password: hashedPassword, // ✅ Now it's a string
+      password: hashedPassword,
     });
 
     const savedUser = await this.userRepository.save(newUser);
 
+    // ✅ Return success response
     return {
       message: 'User registered successfully.',
       user: savedUser,
     };
+  }
+
+  async loginUser(body: any): Promise<any> {
+    const { email, password } = body;
+
+    const findUsers = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (findUsers === null) {
+      return {
+        Message:
+          'User is not found in our record, Please login with register email...!',
+      };
+    }
+    const hash = findUsers.password;
+    const isMatch = await bcrypt.compare(password, hash);
+
+    if (isMatch === false) {
+      return {
+        Message: 'Password is invalid, Please login with valid password...!',
+      };
+    }
+
+    console.log({ findUsers, isMatch });
+
+    return { findUsers };
   }
 
   update(req: Request, param: any) {

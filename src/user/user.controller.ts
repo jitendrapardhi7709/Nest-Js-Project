@@ -11,22 +11,23 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { UserService } from './user.service';
-import { CreateUserDto } from 'src/dto/create-user.dto';
+import { RegisterUserDto } from 'src/user/dto/register-user.dto';
+import { LoginUserDto } from 'src/user/dto/login-user.dto';
+
 @Controller('/user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get()
-  getRequest() {
-    return this.userService.get();
-  }
-
   @Post('/register')
-  createTransaction(@Body() CreateUserDto: CreateUserDto) {
-    console.log({ req: CreateUserDto });
-    return this.userService.register(CreateUserDto);
+  UserRegister(@Body() RegisterUserDto: RegisterUserDto) {
+    console.log({ req: RegisterUserDto });
+    return this.userService.registerUser(RegisterUserDto);
   }
-
+  @Post('/login')
+  UserLogin(@Body() LoginUserDto: LoginUserDto) {
+    console.log({ req: LoginUserDto });
+    return this.userService.loginUser(LoginUserDto);
+  }
   @Patch('/:id')
   updateRequest(@Req() req: Request, @Param() param: { id: number }) {
     console.log({ req: req.body });

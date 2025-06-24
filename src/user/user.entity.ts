@@ -5,18 +5,14 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
+  @Column({ default: null })
   name: string;
-
-  @Column({ unique: true })
+  @Column({ default: null })
   email: string;
-
-  @Column({ unique: true })
-  mobile: number;
-
-  @Column()
+  @Column({ type: 'bigint', default: null })
+  mobile: string;
+  @Column({ default: null })
   password: string;
-  @Column()
+  @Column({ type: 'json', default: null })
   roles: string;
 }

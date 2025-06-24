@@ -1,6 +1,6 @@
 import { IsArray, IsEmail,   IsMobilePhone,   IsString, IsStrongPassword} from 'class-validator';
 
-export class CreateUserDto {
+export class RegisterUserDto {
   @IsString()
   name: string;
   @IsEmail()
