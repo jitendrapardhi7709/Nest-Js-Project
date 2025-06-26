@@ -3,8 +3,10 @@ import { IsArray, IsEmail,   IsMobilePhone,   IsString, IsStrongPassword} from '
 export class RegisterUserDto {
   @IsString()
   name: string;
+
   @IsEmail()
   email: string;
+  
   @IsMobilePhone()
   mobile: number;
   @IsStrongPassword()

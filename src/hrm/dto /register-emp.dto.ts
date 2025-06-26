@@ -8,14 +8,17 @@ import {
 } from 'class-validator';
 
 export class RegisterEmployeeDto {
-  emp_id: string;
   @IsNotEmpty()
   @IsString()
+  emp_id: string;
+  @IsString()
+  @IsNotEmpty()
   emp_name: string;
   @IsEmail()
+  @IsNotEmpty()
   emp_email: string;
   @IsNotEmpty()
-  @IsNumber()
+  @IsNumberString()
   emp_mobile: string;
   @IsNotEmpty()
   @IsDateString()
